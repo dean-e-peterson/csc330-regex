@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Dean Peterson - CSC 330 RegEx</title>
+  <script>
+    "use strict";
+
+    var regExs = [
+        /^[A-Z]{5}\^(?:\d{5})?$/gm,
+        /^(?:[^-a-zA-Z0-9]*[-a-zA-Z0-9]){8}[^-a-zA-Z0-9]*$/gm,
+        /zyz.*zz/gm,
+        /^Abraham Lincoln$/gm,
+        /^H\. G\. Wells$/gm,
+        /^Hunter S\. Thompson$/gm,
+        /^Martin Luther King, Jr\.$/gm,
+    ]
+
+    function onLoad() {
+        // Create drop-down options for each of the regex's above.
+        var selRegExs = document.getElementById('selRegExs');
+        for (let i = 0; i < regExs.length; i++) {
+            selRegExs.innerHTML += '<option value="'
+                                 + i + '">'
+                                 + regExs[i]
+                                 + '</option><br>\n';
+        }
+            
+        // Copy text in textarea to output area, not yet highlighted.
+        var text = document.getElementById('text').value;
+        document.getElementById('output').innerHTML = text;
+    }
+
+    function testRegEx(index) {
+        // Copy text in textarea to output area, with highlighted spans.
+        var text = document.getElementById('text').value;
+        var highlightedText = text.replace(regExs[index],
+                                           '<span class="hi">$&</span>');
+        document.getElementById('output').innerHTML = highlightedText;
+        
+        // Scroll to first highlighted span.
+        var first = document.querySelector('.hi');
+        //first.scrollIntoView(true);
+        // Adjust to show context above and to scroll below fixed #top div.
+        var YDocTopToViewTop = window.scrollY;
+        var YViewTopToFirstTop = first.getBoundingClientRect().top;
+        var YDocTopToFirstTop = YDocTopToViewTop + YViewTopToFirstTop;
+        YDocTopToViewTop = YDocTopToFirstTop - 80 - 200; // See CSS #top, #main
+        window.scrollTo(0, YDocTopToViewTop);
+    }
+  </script>
+  <style>
+    body {
+        margin: 0;
+    }
+    #top { 
+        background-color: papayaWhip;
+        border-bottom: 1px solid peachPuff;
+        height: 200px; /* Matches #main margin-top & JS testRegEx() */
+        padding: 0 1rem 0 1rem;
+        position: fixed;
+        top: 0;
+        width: 100%;
+    }
+    #main {
+        margin-top: 200px; /* Matches #top height & JS testRegEx() */
+        padding: 0 1rem 0 1rem;
+    }
+    .hi {
+        background-color: yellow;
+        font-weight: bold;
+    }
+    h1 {
+        margin: 0.5rem 0 0 0;
+    }
+    select {
+        display: block;
+        font-family: monospace;
+        margin-bottom: 1rem;
+    }
+  </style>
+</head>
+
+<body onload="onLoad();">
+  <div id="top">
+    <h1>Dean Peterson - CSC 330 RegEx</h1>
+
+    <p>
+      Select a regular expression from the drop-down 
+      to highlight all occurences in the text:
+    </p>
+    <select id="selRegExs" onchange="testRegEx(this.value);">
+      <option default value="-1">Select a regular expression</option>
+      <!-- Filled with regex options by body's onload event handler -->
+    </select>
+    <!-- NOTE: For matching at beginning of line, it is important
+         that the following body of text not be indented. -->
+    <textarea id="text" rows="3" cols="70">
+For my body of text, I will use a modified copy of the
+assignment itself, letting my regular expressions match, or not
+match, the given examples.  Note that I am using the multiline m
+flag on the JavaScript regular expressions, which cause the ^
+and $ characters to match the beginning and end of a line,
+instead of the beginning and end of the entire string.
+
+An input string that matches 5 capital letters A-Z, exactly one
+‘^’ character, then an optional 5 digit number. The input string
+should not contain any other characters.
+
+Matches:
+ABCDE^
+APLKS^12345
+
+Does not match (added third as an additional test):
+ABCDE^^
+LOPSA^12345ANE
+LOPSA^1234
+
+An input string that matches exactly 8 alphanumeric characters
+(a-z, A-Z, 0-9) and hyphens in any combination. Any other
+whitespace or other characters are ignored.
+
+Matches (second one corrected to have 8 matching characters):
+(10) CD-405
+p*#(-A918cc)
+1434OFKA
+
+Does not match:
+0apo-(!020zzz)
+ABVCDE10920
+
+Any input string that begins with the characters ‘zyz’ that end
+with ‘zz’. Any substring of the input string may match.
+
+Matches:
+zyzzz
+zzyzzz
+zyyyzzyzyyzyzzzyyyzz
+
+Does not match (the second one does, actually):
+zzyyyzzyyzzyyy
+zyyzzzyzzyyzzy
+zzzyz
+
+Names:
+Abraham Lincoln
+H. G. Wells
+Hunter S. Thompson
+Martin Luther King, Jr.
+    </textarea>
+  </div>
+
+  <div id="main">
+    <br>
+    <pre id="output">
+      <!-- Filled with highlighted text by reg ex testing function -->
+    </pre>
+  </div>
+</body>
+</html>
+
